@@ -82,9 +82,9 @@ form label{
 	padding: 10px 0;
 }
 
-form input#name
-form input#email
-form input#subject {
+form input #name
+form input #email
+form input #subject {
 	width: 400px;
 	background-color: #fafafa;
 	-webkit-border-radius: 3px;
@@ -137,4 +137,11 @@ form input#submit:hover{
   background-image: -ms-linear-gradient(top, #dbdbdb, #cccccc);
   background-image: -o-linear-gradient(top, #dbdbdb, #cccccc);
   background-image: linear-gradient(top, #dbdbdb, #cccccc);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#dbdbdb, endColorstr=#cccccc);
+}
+
+/* Flashed Messages */
+.flash{
+	background-color: #FBB0B0;
+	padding: 10px;
+	width: 400px;
 }
