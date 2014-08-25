@@ -1,28 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 	<h1>Contact Me</h1>
+
+	{% if success %}
+		<p>Thank you. We will get back shortly</p>
+	{% else %}
 	
 	{% with messages = get_flashed_messages() %}
-  	{% if messages %}
-    	<ul class="flash">
-    {% for message in form.name.errors %}
-    	<li>{{ message }}</li>
-    {% endfor %}
+	{% if messages %}
+	<ul class="flash">
+	{% for message in form.name.errors %}
+	    <li>{{ message }}</li>
+	{% endfor %}
 
-    {% for message in form.email.errors %}
-    	<li> {{message}} </li>
-    {% endfor %}
+	{% for message in form.email.errors %}
+	    <li> {{message}} </li>
+	{% endfor %}
 
-    {% for message in form.subject.errors %}
-    	<li>{{ message }}</li>
-    {% endfor %}
+	{% for message in form.subject.errors %}
+	    <li>{{ message }}</li>
+	{% endfor %}
 
-    {% for message in form.message.errors %}
-    	<li>{{ message }}</li>
-    {% endfor %}
-    
-    </ul>
-  	{% endif %}
+	{% for message in form.message.errors %}
+	    <li>{{ message }}</li>
+	{% endfor %}
+	    
+	</ul>
+	{% endif %}
 	{% endwith %}
 
 	<form action="{{url_for('contact')}}" method=post>
@@ -43,5 +47,6 @@
 		{{form.submit}}
 
 	</form>
-
+	
+{% endif %}
 {% endblock %}
