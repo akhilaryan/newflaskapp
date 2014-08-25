@@ -5,9 +5,22 @@
 	{% with messages = get_flashed_messages() %}
   	{% if messages %}
     	<ul class="flash">
-    {% for message in messages %}
+    {% for message in form.name.errors %}
     	<li>{{ message }}</li>
     {% endfor %}
+
+    {% for message in form.email.errors %}
+    	<li> {{message}} </li>
+    {% endfor %}
+
+    {% for message in form.subject.errors %}
+    	<li>{{ message }}</li>
+    {% endfor %}
+
+    {% for message in form.message.errors %}
+    	<li>{{ message }}</li>
+    {% endfor %}
+    
     </ul>
   	{% endif %}
 	{% endwith %}
