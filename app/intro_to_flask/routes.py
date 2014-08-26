@@ -1,20 +1,10 @@
-from flask import Flask, render_template, request, flash
-from forms import ContactForm
+# from intro_to_flask import app
+from flask import Flask, render_template, request, flash, session, redirect, url_for
+from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail
+from models import db
 
 mail = Mail()
-
-app = Flask (__name__)
-
-app.secret_key = "somekey"
-
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 465
-app.config["MAIL_USE_SSL"] = True
-app.config["MAIL_USERNAME"] = 'someone@example.com'
-app.config["MAIL_PASSWORD"] = 'thepassword'
- 
-mail.init_app(app)
 
 @app.route('/')
 def home():
@@ -44,5 +34,9 @@ def contact():
 	elif request.method == 'GET':
 		return render_template('contact.html', form=form)
 
-if __name__ == '__main__':
-	app.run(debug=True)
+@app.route('/testdb')
+def testdb():
+	if db.session.query("1").from_statement("SELECT 1").all():
+		return 'It works'
+	else:
+		return 'Something is broken.'
