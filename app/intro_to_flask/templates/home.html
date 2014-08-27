@@ -4,6 +4,12 @@
 <div class= "jumbo">
 	<h1>Welcome to Double A's Flask App</h1>
 	<h3>This is a sample page for the flask app</h3>
+	<br>
+	{% if not session.logged_in %}
+	<p>You are not logged in</p>
+	{% else %}
+	<p>You are Logged In</p>
+	{% endif %}
 </div>
 
 {% endblock %}

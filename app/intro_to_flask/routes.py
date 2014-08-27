@@ -1,8 +1,10 @@
+import os
 from intro_to_flask import app
-from flask import Flask, render_template, request, flash, session, redirect, url_for
+from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory
 from forms import ContactForm
 from flask.ext.mail import Message, Mail
 from models import db
+from flask_oauth import OAuth
 
 mail = Mail()
 
@@ -34,9 +36,66 @@ def contact():
 	elif request.method == 'GET':
 		return render_template('contact.html', form=form)
 
-@app.route('/testdb')
+@app.route('/favicon.ico')
+def favicon():
+	return send_from_directory(os.path.join(app.root_path, 'static'), 'ico/favicon.ico')
+
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template('404.html'), 404
+
+@app.route('/')
+def index():
+	return render_template('index.html')
+
+# Facebook Authentication
+
+FACEBOOK_APP_ID = '691001537654739'
+FACEBOOK_APP_SECRET = '5db41d64579acb1840d8c3f26476c9ca'
+
+oauth = OAuth()
+
+facebook = oauth.remote_app('facebook',
+    base_url='https://graph.facebook.com/',
+    request_token_url=None,
+    access_token_url='/oauth/access_token',
+    authorize_url='https://www.facebook.com/dialog/oauth',
+    consumer_key=FACEBOOK_APP_ID,
+    consumer_secret=FACEBOOK_APP_SECRET,
+    request_token_params={'scope': ('email, ')}
+)
+
+@facebook.tokengetter
+def get_facebook_token():
+    return session.get('facebook_token')
+
+def pop_login_session():
+    session.pop('logged_in', None)
+    session.pop('facebook_token', None)
+
+@app.route("/facebook_login")
+def facebook_login():
+    return facebook.authorize(callback=url_for('facebook_authorized',
+        next=request.args.get('next'), _external=True))
+
+@app.route("/facebook_authorized")
+@facebook.authorized_handler
+def facebook_authorized(resp):
+    next_url = request.args.get('next') or url_for('index')
+    if resp is None or 'access_token' not in resp:
+        return redirect(next_url)
+
+    session['logged_in'] = True
+    session['facebook_token'] = (resp['access_token'], '')
+
+    return redirect(next_url)	
+
+
+		# Database Testing
+
+""" @app.route('/testdb')
 def testdb():
 	if db.session.query("1").from_statement("SELECT 1").all():
 		return 'It works'
 	else:
-		return 'Something is broken.'
+		return 'Something is broken.' """
