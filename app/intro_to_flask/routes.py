@@ -90,7 +90,10 @@ def facebook_authorized(resp):
 
     return redirect(next_url)	
 
-
+@app.route("/logout")
+def logout():
+    pop_login_session()
+    return redirect(url_for('index'))
 		# Database Testing
 
 """ @app.route('/testdb')
