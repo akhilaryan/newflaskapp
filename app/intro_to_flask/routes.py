@@ -60,11 +60,11 @@ def signup():
 			db.session.add(newuser)
 			db.session.commit()
 
-			session['email'] = newuser.email		
-
-			return "[1] Create New User [2]Sign In the user [3] redirect to users profile"
+			session['email'] = newuser.email
+			return redirect(url_for('profile'))		
+			
 	elif request.method == 'GET':
-		return redirect(url_for('profile'))
+		return render_template('signup.html', form=form)
 
 @app.route('/profile')
 def profile():
