@@ -64,7 +64,19 @@ def signup():
 
 			return "[1] Create New User [2]Sign In the user [3] redirect to users profile"
 	elif request.method == 'GET':
-		return render_template ('signup.html', form=form)
+		return redirect(url_for('profile'))
+
+@app.route('/profile')
+def profile():
+	if 'email' not in session:
+		return redirect(url_for('signin'))
+
+	user = User.query.filter_by(email = session['email']).first()
+
+	if user is None:
+		return redirect(url_for('signin'))
+	else:
+		return render_template('profile.html')
 
 # Facebook Authentication
 
