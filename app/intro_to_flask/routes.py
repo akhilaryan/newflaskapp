@@ -1,7 +1,7 @@
 import os
 from intro_to_flask import app
 from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory
-from forms import ContactForm
+from forms import ContactForm, SignupForm
 from flask.ext.mail import Message, Mail
 from models import db
 from flask_oauth import OAuth
@@ -47,6 +47,18 @@ def page_not_found(e):
 @app.route('/')
 def index():
 	return render_template('index.html')
+
+@app.route('/signup', methods = ['GET', 'POST'])
+def signup():
+	form = SignupForm()
+
+	if request.method == 'POST':
+		if form.validate()== False:
+			return render_template('signup.html', form=form)
+		else:
+			return "[1] Create New User [2]Sign In the user [3] redirect to users profile"
+	elif request.method == 'GET':
+		return render_template ('signup.html', form=form)
 
 # Facebook Authentication
 
@@ -94,6 +106,8 @@ def facebook_authorized(resp):
 def logout():
     pop_login_session()
     return redirect(url_for('index'))
+		
+
 		# Database Testing
 
 """ @app.route('/testdb')

@@ -22,3 +22,11 @@ class User(db.Model):
 
 	def check_password(self, password):
 		return check_password_hash(self.pwdhash, password)
+
+
+# accessing information on facebook.
+
+""" data = facebook.get('/me').data
+if 'id' in data and 'name' in data:
+    user_id = data['id']
+    user_name = data['name'] """
