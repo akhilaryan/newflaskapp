@@ -3,7 +3,7 @@ from intro_to_flask import app
 from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory
 from forms import ContactForm, SignupForm
 from flask.ext.mail import Message, Mail
-from models import db
+from models import db, User
 from flask_oauth import OAuth
 
 mail = Mail()
@@ -56,6 +56,12 @@ def signup():
 		if form.validate()== False:
 			return render_template('signup.html', form=form)
 		else:
+			newuser = User(form.firstname.data, form.lastname.data, form.email.data, form.password.data)
+			db.session.add(newuser)
+			db.session.commit()
+
+			session['email'] = newuser.email		
+
 			return "[1] Create New User [2]Sign In the user [3] redirect to users profile"
 	elif request.method == 'GET':
 		return render_template ('signup.html', form=form)

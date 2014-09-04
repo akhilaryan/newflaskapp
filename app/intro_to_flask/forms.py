@@ -1,5 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, TextAreaField, SubmitField, validators, PasswordField
+from models import db, User
 
 class ContactForm(Form):
 	name = TextField("Name", [validators.Required("Please enter your Name")])
