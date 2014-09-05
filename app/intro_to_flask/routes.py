@@ -1,7 +1,7 @@
 import os
 from intro_to_flask import app
 from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory
-from forms import ContactForm, SignupForm
+from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail
 from models import db, User
 from flask_oauth import OAuth
@@ -62,9 +62,31 @@ def signup():
 
 			session['email'] = newuser.email
 			return redirect(url_for('profile'))		
-			
+
 	elif request.method == 'GET':
 		return render_template('signup.html', form=form)
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+	form = SigninForm()
+
+	if request.method == 'POST':
+		if form.validate() == False:
+			return render_template('signin.html', form=form)
+		else:
+			session['email'] = form.email.data
+			return redirect(url_for('profile'))
+
+	elif request.method == 'GET':
+		return render_template('signin.html', form = form)
+
+@app.route('/signout')
+def signout():
+	if 'email' not in session:
+		return redirect(url_for('signin'))
+
+	session.pop('email', None)
+	return redirect(url_for('home'))
 
 @app.route('/profile')
 def profile():
