@@ -13,17 +13,13 @@
 						<li><a href="{{url_for('home')}}">Home</a></li>
 						<li><a href="{{url_for('about')}}">About</a></li>
 						<li><a href="{{url_for('contact')}}">Contact</a></li>
-						{% if 'email' in session %}
+						{% if 'email' in session or session.logged_in %}
 						<li><a href="{{url_for('profile')}}">Profile</a></li>
 						<li><a href="{{url_for('signout')}}">Sign Out</a></li>
 						{% else %}
 						<li><a href="{{url_for('signup')}}">Sign Up</a></li>
 						<li><a href="{{url_for('signin')}}">Sign In</a></li>
-						{% endif %}
-						{% if not session.logged_in %}
 						<li><a href="/facebook_login">Login with Facebook</a></li>
-						{% else %}
-						<li><a href="/logout">Logout</a></li>
 						{% endif %}
 					</ul>
 				</nav></strong>

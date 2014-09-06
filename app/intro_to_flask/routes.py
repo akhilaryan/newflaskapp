@@ -89,9 +89,11 @@ def signin():
 @app.route('/signout')
 def signout():
 	if 'email' not in session:
+		pop_login_session()
 		return redirect(url_for('signin'))
 
 	session.pop('email', None)
+	pop_login_session()
 	return redirect(url_for('home'))
 
 @app.route('/profile')
@@ -148,10 +150,10 @@ def facebook_authorized(resp):
 
     return redirect(next_url)	
 
-@app.route("/logout")
-def logout():
-    pop_login_session()
-    return redirect(url_for('index'))
+# @app.route("/logout")
+# def logout():
+#     pop_login_session()
+#     return redirect(url_for('index'))
 		
 
 		# Database Testing
