@@ -1,5 +1,5 @@
 import os
-from intro_to_flask import app
+from app import app
 from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory
 from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail

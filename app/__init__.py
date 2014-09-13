@@ -1,8 +1,9 @@
 from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask (__name__)
-
-app.secret_key = "somekey"
+app.config.from_object('config')
+db = SQLAlchemy(app)
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 465
@@ -13,7 +14,5 @@ app.config["MAIL_PASSWORD"] = 'thepassword'
 from routes import mail
 mail.init_app(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/development'
-
-from models import db
+# from models import db
 db.init_app(app)
