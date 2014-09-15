@@ -1,12 +1,24 @@
 import os
-from app import app
-from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory
+from app import app, db, lm
+from flask import Flask, render_template, request, flash, session, redirect, url_for, send_from_directory, g
 from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail
+from flask.ext.login import current_user
 from models import db, User
 from flask_oauth import OAuth
 
 mail = Mail()
+
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+@app.before_request
+def before_request():
+    g.user=current_user
+    if g.user.is_authenticated():
+        db.session.add(g.user)
+        db.session.commit()
 
 @app.route('/')
 def home():
@@ -106,7 +118,30 @@ def profile():
 	if user is None:
 		return redirect(url_for('signin'))
 	else:
-		return render_template('profile.html')
+		user = g.user
+		posts = [ #fake post
+		{
+			'author': {'firstname' : 'John'},
+			'body' : 'Beautiful day'
+		}
+				]
+		return render_template('profile.html',
+			title = 'Profile',
+			user = user,
+			posts = posts)
+
+
+# @app.route('/profile/<firstname>')
+# def user(firstname):
+# 	if 'email' not in session:
+# 		return redirect(url_for('signin'))
+
+# 	user = User.query.filter_by(email = session['email']).first()
+#  	if user is None:
+# 		return redirect(url_for('signin'))
+
+# 	return render_template('profile.html')
+
 
 # Facebook Authentication
 

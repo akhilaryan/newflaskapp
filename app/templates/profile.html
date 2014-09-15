@@ -5,5 +5,9 @@
 	<h2>Profile</h2>
 	<h3>This is {{session ['email']}}'s profile page.</h3>
 </div>
-
+<body>
+{% for post in posts %}
+	{% include 'post.html' %}
+{% endfor %}
+</body>
 {% endblock %}
