@@ -130,7 +130,6 @@ def profile():
 			user = user,
 			posts = posts)
 
-
 # @app.route('/profile/<firstname>')
 # def user(firstname):
 # 	if 'email' not in session:
