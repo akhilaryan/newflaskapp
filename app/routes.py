@@ -5,6 +5,7 @@ from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail
 from flask.ext.login import current_user
 from models import db, User
+import facebook
 from flask_oauth import OAuth
 
 mail = Mail()
@@ -145,21 +146,21 @@ def profile():
 # Facebook Authentication
 
 FACEBOOK_APP_ID = '691001537654739'
-FACEBOOK_APP_SECRET = '5db41d64579acb1840d8c3f26476c9ca'
+FACEBOOK_APP_KEY = '5db41d64579acb1840d8c3f26476c9ca'
 
 oauth = OAuth()
 
-facebook = oauth.remote_app('facebook',
+fb = oauth.remote_app('facebook',
     base_url='https://graph.facebook.com/',
     request_token_url=None,
     access_token_url='/oauth/access_token',
     authorize_url='https://www.facebook.com/dialog/oauth',
     consumer_key=FACEBOOK_APP_ID,
-    consumer_secret=FACEBOOK_APP_SECRET,
+    consumer_secret=FACEBOOK_APP_KEY,
     request_token_params={'scope': ('email, ')}
 )
 
-@facebook.tokengetter
+@fb.tokengetter
 def get_facebook_token():
     return session.get('facebook_token')
 
@@ -169,26 +170,36 @@ def pop_login_session():
 
 @app.route("/facebook_login")
 def facebook_login():
-    return facebook.authorize(callback=url_for('facebook_authorized',
+    return fb.authorize(callback=url_for('facebook_authorized',
         next=request.args.get('next'), _external=True))
 
 @app.route("/facebook_authorized")
-@facebook.authorized_handler
+@fb.authorized_handler
 def facebook_authorized(resp):
     next_url = request.args.get('next') or url_for('index')
     if resp is None or 'access_token' not in resp:
         return redirect(next_url)
+    
+    elif 'email' not in session:
+		fb_access_token = resp['access_token']
+		print fb_access_token
 
-    session['logged_in'] = True
-    session['facebook_token'] = (resp['access_token'], '')
+		graph = facebook.GraphAPI(fb_access_token)
+		fb_details = graph.get_object('me')
+		print fb_details
 
-    return redirect(next_url)	
+		firstname = fb_details['name']
+		lastname = fb_details['name']
+		email = fb_details['email']
+		id = fb_details['id']
 
-# @app.route("/logout")
-# def logout():
-#     pop_login_session()
-#     return redirect(url_for('index'))
-		
+		user = User(firstname, lastname, email, id)
+		db.session.add(user)
+		db.session.commit()
+		session['logged_in'] = True
+		session['facebook_token'] = (resp['access_token'], '')
+		return redirect(next_url)
+	
 
 		# Database Testing
 

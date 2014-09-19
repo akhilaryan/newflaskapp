@@ -8,7 +8,7 @@ class User(db.Model):
 	lastname = db.Column(db.String(100))
 	email = db.Column(db.String(120), unique = True)
 	pwdhash = db.Column(db.String(54))
-	post = db.relationship('Post', backref = 'author', lazy = 'dynamic')
+	posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
 
 	def __init__(self, firstname, lastname, email, password):
 		self.firstname=firstname.title()
