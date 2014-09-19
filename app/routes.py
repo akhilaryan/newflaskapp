@@ -182,14 +182,13 @@ def facebook_authorized(resp):
     
     elif 'email' not in session:
 		fb_access_token = resp['access_token']
-		print fb_access_token
 
 		graph = facebook.GraphAPI(fb_access_token)
 		fb_details = graph.get_object('me')
-		print fb_details
+		# print fb_details
 
-		firstname = fb_details['name']
-		lastname = fb_details['name']
+		firstname = fb_details['first_name']
+		lastname = fb_details['last_name']
 		email = fb_details['email']
 		id = fb_details['id']
 
@@ -198,6 +197,7 @@ def facebook_authorized(resp):
 		db.session.commit()
 		session['logged_in'] = True
 		session['facebook_token'] = (resp['access_token'], '')
+		
 		return redirect(next_url)
 	
 
