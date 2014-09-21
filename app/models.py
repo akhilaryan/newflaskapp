@@ -19,6 +19,9 @@ class User(db.Model):
 	def is_authenticated(self):
 		return True
 
+	def photo(self, size):
+		return 'https://www.graph.facebook.com/me/picture'
+
 	def set_password(self, password):
 		self.pwdhash = generate_password_hash(password)
 

@@ -7,6 +7,7 @@ from flask.ext.login import current_user
 from models import db, User
 import facebook
 from flask_oauth import OAuth
+# from werkzeug import secure_filename
 
 mail = Mail()
 
@@ -109,40 +110,6 @@ def signout():
 	pop_login_session()
 	return redirect(url_for('home'))
 
-@app.route('/profile')
-def profile():
-	if 'email' not in session:
-		return redirect(url_for('signin'))
-
-	user = User.query.filter_by(email = session['email']).first()
-
-	if user is None:
-		return redirect(url_for('signin'))
-	else:
-		user = g.user
-		posts = [ #fake post
-		{
-			'author': {'firstname' : 'John'},
-			'body' : 'Beautiful day'
-		}
-				]
-		return render_template('profile.html',
-			title = 'Profile',
-			user = user,
-			posts = posts)
-
-# @app.route('/profile/<firstname>')
-# def user(firstname):
-# 	if 'email' not in session:
-# 		return redirect(url_for('signin'))
-
-# 	user = User.query.filter_by(email = session['email']).first()
-#  	if user is None:
-# 		return redirect(url_for('signin'))
-
-# 	return render_template('profile.html')
-
-
 # Facebook Authentication
 
 FACEBOOK_APP_ID = '691001537654739'
@@ -185,21 +152,49 @@ def facebook_authorized(resp):
 
 		graph = facebook.GraphAPI(fb_access_token)
 		fb_details = graph.get_object('me')
+		# fb_photo = graph.get_object('me/picture')
 		# print fb_details
 
 		firstname = fb_details['first_name']
 		lastname = fb_details['last_name']
 		email = fb_details['email']
 		id = fb_details['id']
+		# photo = fb_photo
 
 		user = User(firstname, lastname, email, id)
 		db.session.add(user)
 		db.session.commit()
-		session['logged_in'] = True
-		session['facebook_token'] = (resp['access_token'], '')
-		
-		return redirect(next_url)
-	
+		# session['logged_in'] = True
+		# session['facebook_token'] = (resp['access_token'], '')
+		# return redirect(next_url)
+		session['email'] = user.email
+    session['logged_in'] = True
+    session['facebook_token'] = (resp['access_token'], '')
+    return redirect(next_url)
+
+	# Profile
+@app.route('/profile')
+def profile():
+	if 'email' not in session:
+		return redirect(url_for('signup'))
+
+	user = User.query.filter_by(email = session['email']).first()
+
+	if user is None:
+		return redirect(url_for('signin'))
+	else:
+		user = g.user
+		posts = [ #fake post
+		{
+			'author': {'firstname' : 'John'},
+			'body' : 'Beautiful day'
+		}
+				]
+		return render_template('profile.html',
+			title = 'Profile',
+			user = user,
+			posts = posts)
+
 
 		# Database Testing
 
@@ -209,3 +204,17 @@ def testdb():
 		return 'It works'
 	else:
 		return 'Something is broken.' """
+
+		# Uploads
+# @app.route('/upload', methods=['POST'])
+# def upload():
+# 	file = request.files['file']
+# 	if file and allowed_file(file.filename):
+# 		filename = secure_filename(file.filename)
+# 		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+# 		return redirect(url_for('uploaded_file', filename = filename))
+
+
+# @app.route('/upload/<filename>')
+# def uploaded_file(filename):
+# 	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

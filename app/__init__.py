@@ -17,6 +17,13 @@ app.config["MAIL_USE_SSL"] = True
 app.config["MAIL_USERNAME"] = 'someone@example.com'
 app.config["MAIL_PASSWORD"] = 'thepassword'
 
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+def allowed_file(filename):
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
 from routes import mail
 mail.init_app(app)
 
