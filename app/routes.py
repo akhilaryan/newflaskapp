@@ -5,9 +5,10 @@ from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail
 from flask.ext.login import current_user
 from models import db, User
+from flask.ext.uploads import UploadSet, IMAGES
 import facebook
 from flask_oauth import OAuth
-# from werkzeug import secure_filename
+from werkzeug import secure_filename
 
 mail = Mail()
 
@@ -152,21 +153,17 @@ def facebook_authorized(resp):
 
 		graph = facebook.GraphAPI(fb_access_token)
 		fb_details = graph.get_object('me')
-		# fb_photo = graph.get_object('me/picture')
-		# print fb_details
+		fb_photo = graph.get_object('me/picture')
+		# print fb_photo
 
 		firstname = fb_details['first_name']
 		lastname = fb_details['last_name']
 		email = fb_details['email']
 		id = fb_details['id']
-		# photo = fb_photo
 
 		user = User(firstname, lastname, email, id)
 		db.session.add(user)
 		db.session.commit()
-		# session['logged_in'] = True
-		# session['facebook_token'] = (resp['access_token'], '')
-		# return redirect(next_url)
 		session['email'] = user.email
     session['logged_in'] = True
     session['facebook_token'] = (resp['access_token'], '')
@@ -190,6 +187,7 @@ def profile():
 			'body' : 'Beautiful day'
 		}
 				]
+
 		return render_template('profile.html',
 			title = 'Profile',
 			user = user,
@@ -206,14 +204,39 @@ def testdb():
 		return 'Something is broken.' """
 
 		# Uploads
-# @app.route('/upload', methods=['POST'])
-# def upload():
-# 	file = request.files['file']
-# 	if file and allowed_file(file.filename):
-# 		filename = secure_filename(file.filename)
-# 		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-# 		return redirect(url_for('uploaded_file', filename = filename))
+photos = UploadSet('photos', IMAGES)
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST' and 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        rec = Photo(filename=filename, user=g.user.id)
+        rec.store()
+        flash("Photo saved.")
+        return redirect(url_for('show', id=rec.id))
+    return render_template('profile.html')
+
+@app.route('/photo/<id>')
+def show(id):
+    photo = Photo.load(id)
+    if photo is None:
+        abort(404)
+    url = photos.url(photo.filename)
+    return render_template('show.html', url=url, photo=photo)
+
+# def allowed_file(filename):
+# 	return '.' in filename and \
+# 		filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+# @app.route('/upload', methods=['GET','POST'])
+# def upload():
+# 	if request.method == 'POST':
+# 		file = request.files['file']
+# 		if file and allowed_file(file.filename):
+# 			filename = secure_filename(file.filename)
+# 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+# 			return redirect(url_for('uploaded_file', filename = filename))
+# 	return redirect(url_for('profile'))
 
 # @app.route('/upload/<filename>')
 # def uploaded_file(filename):

@@ -1,9 +1,18 @@
+<!doctype html>
+
 {% extends "base.html" %}
 {% block content %}
 
 <div class="jumbo">
 	<h2>Profile</h2>
 	<h3>This is {{session ['email']}}'s profile page.</h3>
+	<img src="{{ url_for('uploaded_file', filename = filename) }}" />
+	<h3>Upload new file</h3>
+	<form action="upload" method = "post" enctype="multipart/form-data">
+		<p><input type="file" name="file">
+		<input type="submit" value="Upload">
+		</p>
+	</form>
 </div>
 <body>
 {% for post in posts %}
