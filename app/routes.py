@@ -228,27 +228,3 @@ def uploaded_file(filename):
 @app.route('/upload/<filename>')
 def send_file(filename):
 	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-
-
-# trying flask-upload
-
-# photos = UploadSet('photos', default_dest='/app/uploads': IMAGES)
-
-# @app.route('/upload', methods=['GET', 'POST'])
-# def upload():
-#     if request.method == 'POST' and 'photo' in request.files:
-#         filename = photos.save(request.files['photo'])
-#         rec = Photo(filename=filename, user=g.user.id)
-#         rec.store()
-#         flash("Photo saved.")
-#         return redirect(url_for('show', id=rec.id))
-#     return render_template('profile.html')
-
-# @app.route('/photo/<id>')
-# def show(id):
-#     photo = Photo.load(id)
-#     if photo is None:
-#     	print "shit!"
-#     url = photos.url(photo.filename)
-#     return render_template('profile.html', url=url, photo=photo)
