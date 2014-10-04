@@ -5,7 +5,6 @@ from forms import ContactForm, SignupForm, SigninForm
 from flask.ext.mail import Message, Mail
 from flask.ext.login import current_user
 from models import db, User
-from flask.ext.uploads import UploadSet, IMAGES
 import facebook
 from flask_oauth import OAuth
 from werkzeug import secure_filename
@@ -217,14 +216,15 @@ def upload():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			return redirect(url_for('uploaded_file', filename = filename))
+			return redirect(url_for('send_file', filename = filename))
 	return redirect(url_for('profile'))
 
-@app.route('/show/<filename>')
-def uploaded_file(filename):
-    filename = '/Users/akhilaryan/developer/newflaskapp/app/uploads/' + filename
-    return render_template('profile.html', filename=filename)
+# @app.route('/show/<filename>')
+# def uploaded_file(filename):
+#     filename = '/Users/akhilaryan/developer/newflaskapp/app/uploads/' + filename
+#     return render_template('profile.html', filename=filename)
 
 @app.route('/upload/<filename>')
 def send_file(filename):
-	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+	filename = send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+	return render_template('profile.html', filename=filename)
