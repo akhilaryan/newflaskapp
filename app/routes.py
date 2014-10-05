@@ -191,7 +191,8 @@ def profile():
 		return render_template('profile.html',
 			title = 'Profile',
 			user = user,
-			posts = posts)
+			posts = posts,
+			filename = 'profile.png')
 
 
 		# Database Testing
@@ -208,6 +209,10 @@ def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
+def photo_file(filename):
+	filename = 'profile.png'
+	return filename
+
 
 @app.route('/upload', methods=['GET','POST'])
 def upload():
@@ -215,6 +220,7 @@ def upload():
 		file = request.files['file']
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
+			filename = photo_file(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return redirect(url_for('send_file', filename = filename))
 	return redirect(url_for('profile'))
@@ -226,5 +232,6 @@ def upload():
 
 @app.route('/upload/<filename>')
 def send_file(filename):
-	filename = send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-	return render_template('profile.html', filename=filename)
+	print app.config['UPLOAD_FOLDER']
+	return render_template('profile.html', filename='profile.png')
+	# return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
